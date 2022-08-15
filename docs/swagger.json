@@ -1,13 +1,26 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {},
-        "license": {}
+        "description": "This is a sample server celler server.",
+        "title": "Swagger Example API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
     },
+    "host": "localhost:8880",
+    "basePath": "/api/v1",
     "paths": {
-        "/demo/bind": {
+        "/admin_login/login": {
             "post": {
-                "description": "测试数据绑定",
+                "description": "管理员登录",
                 "consumes": [
                     "application/json"
                 ],
@@ -15,18 +28,18 @@
                     "application/json"
                 ],
                 "tags": [
-                    "用户"
+                    "管理员接口"
                 ],
-                "summary": "测试数据绑定",
-                "operationId": "/demo/bind",
+                "summary": "管理员登录",
+                "operationId": "/admin_login/login",
                 "parameters": [
                     {
                         "description": "body",
-                        "name": "polygon",
+                        "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.DemoInput"
+                            "$ref": "#/definitions/dto.AdminLoginInput"
                         }
                     }
                 ],
@@ -42,7 +55,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.DemoInput"
+                                            "$ref": "#/definitions/dto.AdminLoginOutput"
                                         }
                                     }
                                 }
@@ -54,47 +67,53 @@
         }
     },
     "definitions": {
-        "dto.DemoInput": {
+        "dto.AdminLoginInput": {
             "type": "object",
             "required": [
-                "age",
-                "name",
-                "passwd"
+                "password",
+                "username"
             ],
             "properties": {
-                "age": {
-                    "type": "integer",
-                    "example": 20
-                },
-                "name": {
-                    "type": "string",
-                    "example": "姓名"
-                },
-                "passwd": {
+                "password": {
+                    "description": "密码",
                     "type": "string",
                     "example": "123456"
+                },
+                "username": {
+                    "description": "管理员用户名",
+                    "type": "string",
+                    "example": "admin"
+                }
+            }
+        },
+        "dto.AdminLoginOutput": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "description": "Token",
+                    "type": "string",
+                    "example": "token"
                 }
             }
         },
         "middleware.Response": {
             "type": "object",
             "properties": {
-                "data": {
-                    "type": "object"
-                },
+                "data": {},
                 "errmsg": {
                     "type": "string"
                 },
                 "errno": {
                     "type": "integer"
                 },
-                "stack": {
-                    "type": "object"
-                },
-                "trace_id": {
-                    "type": "object"
-                }
+                "stack": {},
+                "trace_id": {}
             }
+        }
+    },
+    "securityDefinitions": {
+        "BasicAuth": {
+            "type": "basic"
         }
     }
 }
