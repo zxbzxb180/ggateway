@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/gin"
+	"github.com/zxbzxb180/ggateway/dao"
 	"github.com/zxbzxb180/ggateway/dto"
 	"github.com/zxbzxb180/ggateway/middleware"
 )
@@ -29,6 +31,17 @@ func (adminlogin *AdminLoginController) AdminLogin(c *gin.Context) {
 		middleware.ResponseError(c, 1001, err)
 		return
 	}
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 1002, err)
+	}
+
+	admin := &dao.Admin{}
+	admin, err = admin.LoginCheck(c, tx, params)
+	if err != nil {
+		middleware.ResponseError(c, 1003, err)
+	}
+
 	out := &dto.AdminLoginOutput{Token: params.UserName}
 	middleware.ResponseSuccess(c, out)
 }

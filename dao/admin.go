@@ -1,8 +1,10 @@
 package dao
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/zxbzxb180/ggateway/dto"
+	"github.com/zxbzxb180/ggateway/public"
 	"gorm.io/gorm"
 	"time"
 )
@@ -10,8 +12,8 @@ import (
 type Admin struct {
 	Id        int       `json:"id" gorm:"primary_key" description:"自增主键"`
 	UserName  string    `json:"user_name" gorm:"column:user_name" description:"管理员名称"`
-	Salt      int       `json:"salt" gorm:"column:salt" description:"管理员加盐值"`
-	Password  int64     `json:"password" gorm:"column:password" description:"密码"`
+	Salt      string    `json:"salt" gorm:"column:salt" description:"管理员加盐值"`
+	Password  string    `json:"password" gorm:"column:password" description:"密码"`
 	UpdatedAt time.Time `json:"update_at" gorm:"column:update_at" description:"更新时间"`
 	CreatedAt time.Time `json:"create_at" gorm:"column:create_at" description:"创建时间"`
 	IsValid   int       `json:"is_valid" gorm:"column:is_valid" description:"是否有效"`
@@ -22,8 +24,15 @@ func (t *Admin) TableName() string {
 }
 
 func (t *Admin) LoginCheck(c *gin.Context, tx *gorm.DB, param *dto.AdminLoginInput) (*Admin, error) {
-	t.Find(c, tx, &Admin{UserName: param.UserName, IsValid: 1})
-	return nil, nil
+	adminInfo, err := t.Find(c, tx, &Admin{UserName: param.UserName, IsValid: 1})
+	if err != nil {
+		return nil, errors.New("用户信息不存在")
+	}
+	saltPassword := public.GenSaltPassword(param.Password, adminInfo.Salt)
+	if adminInfo.Password != saltPassword {
+		return nil, errors.New("密码错误，请重新输入")
+	}
+	return adminInfo, nil
 }
 
 func (t *Admin) Find(c *gin.Context, tx *gorm.DB, search *Admin) (*Admin, error) {
