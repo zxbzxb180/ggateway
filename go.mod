@@ -1,9 +1,8 @@
-module github.com/zxbzxb180/ggateway
+module ggateway
 
 go 1.18
 
 require (
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/e421083458/golang_common v1.2.1
 	github.com/gin-gonic/contrib v0.0.0-20190526021735-7fb7810ed2a0
 	github.com/gin-gonic/gin v1.7.7
@@ -14,6 +13,7 @@ require (
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.5
 	gopkg.in/go-playground/validator.v9 v9.29.0
+	gorm.io/gorm v1.22.4
 )
 
 require (
@@ -60,7 +60,7 @@ require (
 	golang.org/x/tools v0.0.0-20190614205625-5aca471b1d59 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 	gorm.io/driver/mysql v1.2.1 // indirect
-	gorm.io/gorm v1.22.4 // indirect
 )
 
 replace github.com/gin-contrib/sse v0.1.0 => github.com/e421083458/sse v0.1.1
+//replace ggateway => ../ggateway

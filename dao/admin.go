@@ -2,15 +2,15 @@ package dao
 
 import (
 	"errors"
+	"ggateway/dto"
+	"ggateway/public"
 	"github.com/gin-gonic/gin"
-	"github.com/zxbzxb180/ggateway/dto"
-	"github.com/zxbzxb180/ggateway/public"
 	"gorm.io/gorm"
 	"time"
 )
 
 type Admin struct {
-	Id        int       `json:"id" gorm:"primary_key" description:"自增主键"`
+	ID        int       `json:"id" gorm:"primary_key" description:"自增主键"`
 	UserName  string    `json:"user_name" gorm:"column:user_name" description:"管理员名称"`
 	Salt      string    `json:"salt" gorm:"column:salt" description:"管理员加盐值"`
 	Password  string    `json:"password" gorm:"column:password" description:"密码"`
@@ -42,4 +42,10 @@ func (t *Admin) Find(c *gin.Context, tx *gorm.DB, search *Admin) (*Admin, error)
 		return nil, err
 	}
 	return admin, nil
+}
+
+func (t *Admin) Save(c *gin.Context, tx *gorm.DB) error {
+
+	return tx.WithContext(c).Save(t).Error
+
 }

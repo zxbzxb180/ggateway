@@ -1,5 +1,22 @@
 basePath: /api/v1
 definitions:
+  dto.AdminInfoOutput:
+    properties:
+      avatar:
+        type: string
+      id:
+        type: integer
+      introduction:
+        type: string
+      login_time:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      user_name:
+        type: string
+    type: object
   dto.AdminLoginInput:
     properties:
       password:
@@ -20,6 +37,15 @@ definitions:
         description: Token
         example: token
         type: string
+    type: object
+  dto.ChangePwdInput:
+    properties:
+      password:
+        description: 密码
+        example: "123456"
+        type: string
+    required:
+    - password
     type: object
   middleware.Response:
     properties:
@@ -45,6 +71,55 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /admin/admin_info:
+    get:
+      consumes:
+      - application/json
+      description: 管理员信息
+      operationId: /admin/admin_info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminInfoOutput'
+              type: object
+      summary: 管理员信息
+      tags:
+      - 管理员信息接口
+  /admin/change_pwd:
+    post:
+      consumes:
+      - application/json
+      description: 修改密码
+      operationId: /admin/change_pwd
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ChangePwdInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/middleware.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 修改密码
+      tags:
+      - 管理员信息接口
   /admin_login/login:
     post:
       consumes:
@@ -71,6 +146,27 @@ paths:
                   $ref: '#/definitions/dto.AdminLoginOutput'
               type: object
       summary: 管理员登录
+      tags:
+      - 管理员接口
+  /admin_login/logout:
+    get:
+      consumes:
+      - application/json
+      description: 管理员退出
+      operationId: /admin_login/logout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/middleware.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 管理员退出
       tags:
       - 管理员接口
 securityDefinitions:

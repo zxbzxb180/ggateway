@@ -1,11 +1,11 @@
 package services
 
 import (
-	//"github.com/zxbzxb180/ggateway/dao"
+	//"ggateway/dao"
+	"ggateway/dto"
+	"ggateway/middleware"
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/gin"
-	"github.com/zxbzxb180/ggateway/dto"
-	"github.com/zxbzxb180/ggateway/middleware"
 )
 
 type ApiService struct {

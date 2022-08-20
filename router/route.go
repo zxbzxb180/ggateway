@@ -1,14 +1,14 @@
 package router
 
 import (
+	"ggateway/controller"
+	"ggateway/docs"
+	"ggateway/middleware"
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
-	"github.com/zxbzxb180/ggateway/controller"
-	"github.com/zxbzxb180/ggateway/docs"
-	"github.com/zxbzxb180/ggateway/middleware"
 	"log"
 )
 
@@ -74,6 +74,8 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		})
 	})
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	// admin登录路由
 	adminLoginRouter := router.Group("/admin_login")
 	store, err := sessions.NewRedisStore(10, "tcp", "139.198.181.33:6379", "", []byte("secret"))
 	if err != nil {
@@ -89,6 +91,23 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		middleware.TranslationMiddleware())
 	{
 		controller.AdminLoginRegister(adminLoginRouter)
+	}
+
+	// admin信息路由
+	adminRouter := router.Group("/admin")
+
+	adminRouter.Use(
+		// session 中间件
+		sessions.Sessions("mysession", store),
+		middleware.RecoveryMiddleware(),
+		// 请求中间件
+		middleware.RequestLog(),
+		// session 校验
+		middleware.SessionAuthMiddleware(),
+		// 参数翻译中间件
+		middleware.TranslationMiddleware())
+	{
+		controller.AdminRegister(adminRouter)
 	}
 	return router
 }

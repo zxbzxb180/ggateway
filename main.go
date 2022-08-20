@@ -1,8 +1,8 @@
 package main
 
 import (
+	"ggateway/router"
 	"github.com/e421083458/golang_common/lib"
-	"github.com/zxbzxb180/ggateway/router"
 	"os"
 	"os/signal"
 	"syscall"

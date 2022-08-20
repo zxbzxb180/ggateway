@@ -1,11 +1,11 @@
 package middleware
 
 import (
+	"ggateway/public"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/zh"
 	"github.com/go-playground/universal-translator"
-	"github.com/zxbzxb180/ggateway/public"
 	"gopkg.in/go-playground/validator.v9"
 	en_translations "gopkg.in/go-playground/validator.v9/translations/en"
 	zh_translations "gopkg.in/go-playground/validator.v9/translations/zh"
