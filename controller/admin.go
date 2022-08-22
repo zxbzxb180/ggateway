@@ -23,7 +23,7 @@ func AdminRegister(group *gin.RouterGroup) {
 // AdminInfo godoc
 // @Summary 管理员信息
 // @Description 管理员信息
-// @Tags 管理员信息接口
+// @Tags 管理员接口
 // @ID /admin/admin_info
 // @Accept json
 // @Produce	json
@@ -54,7 +54,7 @@ func (admininfo *AdminController) AdminInfo(c *gin.Context) {
 // ChangePwd godoc
 // @Summary 修改密码
 // @Description 修改密码
-// @Tags 管理员信息接口
+// @Tags 管理员接口
 // @ID /admin/change_pwd
 // @Accept json
 // @Produce	json

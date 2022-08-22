@@ -42,7 +42,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "管理员信息接口"
+                    "管理员接口"
                 ],
                 "summary": "管理员信息",
                 "operationId": "/admin/admin_info",
@@ -78,7 +78,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "管理员信息接口"
+                    "管理员接口"
                 ],
                 "summary": "修改密码",
                 "operationId": "/admin/change_pwd",
@@ -197,6 +197,64 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/service/service_list": {
+            "get": {
+                "description": "服务列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "服务列表",
+                "operationId": "/service/service_list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "info",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_number",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ServiceListOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -265,6 +323,62 @@ var doc = `{
                     "description": "密码",
                     "type": "string",
                     "example": "123456"
+                }
+            }
+        },
+        "dto.ServiceListOutput": {
+            "type": "object",
+            "required": [
+                "list"
+            ],
+            "properties": {
+                "list": {
+                    "description": "服务列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ServiceListOutputItem"
+                    }
+                },
+                "total": {
+                    "description": "总数",
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ServiceListOutputItem": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "load_type": {
+                    "description": "负载类型",
+                    "type": "integer"
+                },
+                "qpd": {
+                    "description": "每日请求数量",
+                    "type": "integer"
+                },
+                "qps": {
+                    "description": "每秒请求数量",
+                    "type": "integer"
+                },
+                "service_addr": {
+                    "description": "服务地址",
+                    "type": "string"
+                },
+                "service_desc": {
+                    "description": "服务描述",
+                    "type": "string"
+                },
+                "service_name": {
+                    "description": "服务名称",
+                    "type": "string"
+                },
+                "total_node": {
+                    "description": "节点总数",
+                    "type": "integer"
                 }
             }
         },

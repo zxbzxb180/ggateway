@@ -47,6 +47,46 @@ definitions:
     required:
     - password
     type: object
+  dto.ServiceListOutput:
+    properties:
+      list:
+        description: 服务列表
+        items:
+          $ref: '#/definitions/dto.ServiceListOutputItem'
+        type: array
+      total:
+        description: 总数
+        type: integer
+    required:
+    - list
+    type: object
+  dto.ServiceListOutputItem:
+    properties:
+      id:
+        description: id
+        type: integer
+      load_type:
+        description: 负载类型
+        type: integer
+      qpd:
+        description: 每日请求数量
+        type: integer
+      qps:
+        description: 每秒请求数量
+        type: integer
+      service_addr:
+        description: 服务地址
+        type: string
+      service_desc:
+        description: 服务描述
+        type: string
+      service_name:
+        description: 服务名称
+        type: string
+      total_node:
+        description: 节点总数
+        type: integer
+    type: object
   middleware.Response:
     properties:
       data: {}
@@ -91,7 +131,7 @@ paths:
               type: object
       summary: 管理员信息
       tags:
-      - 管理员信息接口
+      - 管理员接口
   /admin/change_pwd:
     post:
       consumes:
@@ -119,7 +159,7 @@ paths:
               type: object
       summary: 修改密码
       tags:
-      - 管理员信息接口
+      - 管理员接口
   /admin_login/login:
     post:
       consumes:
@@ -169,6 +209,42 @@ paths:
       summary: 管理员退出
       tags:
       - 管理员接口
+  /service/service_list:
+    get:
+      consumes:
+      - application/json
+      description: 服务列表
+      operationId: /service/service_list
+      parameters:
+      - description: 关键词
+        in: query
+        name: info
+        type: string
+      - description: 页码
+        in: query
+        name: page_number
+        required: true
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ServiceListOutput'
+              type: object
+      summary: 服务列表
+      tags:
+      - 服务管理
 securityDefinitions:
   BasicAuth:
     type: basic

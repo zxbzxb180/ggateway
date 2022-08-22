@@ -95,7 +95,6 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 
 	// admin信息路由
 	adminRouter := router.Group("/admin")
-
 	adminRouter.Use(
 		// session 中间件
 		sessions.Sessions("mysession", store),
@@ -108,6 +107,22 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		middleware.TranslationMiddleware())
 	{
 		controller.AdminRegister(adminRouter)
+	}
+
+	// 服务路由
+	serviceRouter := router.Group("/service")
+	serviceRouter.Use(
+		// session 中间件
+		sessions.Sessions("mysession", store),
+		middleware.RecoveryMiddleware(),
+		// 请求中间件
+		middleware.RequestLog(),
+		// session 校验
+		middleware.SessionAuthMiddleware(),
+		// 参数翻译中间件
+		middleware.TranslationMiddleware())
+	{
+		controller.ServiceRegister(serviceRouter)
 	}
 	return router
 }
