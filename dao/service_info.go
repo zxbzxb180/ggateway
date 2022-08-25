@@ -21,13 +21,55 @@ func (t *ServiceInfo) TableName() string {
 	return "gateway_service_info"
 }
 
-func (t *ServiceInfo) PageList(c *gin.Context, tx *gorm.DB, param *dto.ServiceListInput) ([]ServiceInfo, int64, error) {
+func (t *ServiceInfo) GetServiceDetail(c *gin.Context, tx *gorm.DB, search *ServiceInfo) (*ServiceDetail, error) {
+	httpRule := &ServiceHttpRule{ServiceID: search.ID}
+	httpRule, err := httpRule.Find(c, tx, httpRule)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	tcpRule := &ServiceTcpRule{ServiceID: search.ID}
+	tcpRule, err = tcpRule.Find(c, tx, tcpRule)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	grpcRule := &ServiceGrpcRule{ServiceID: search.ID}
+	grpcRule, err = grpcRule.Find(c, tx, grpcRule)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	loadBalance := &ServiceLoadBalance{ServiceID: search.ID}
+	loadBalance, err = loadBalance.Find(c, tx, loadBalance)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	accessControl := &ServiceAccessControl{ServiceID: search.ID}
+	accessControl, err = accessControl.Find(c, tx, accessControl)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	detail := &ServiceDetail{
+		Info:          search,
+		HttpRule:      httpRule,
+		TcpRule:       tcpRule,
+		GrpcRule:      grpcRule,
+		LoadBalance:   loadBalance,
+		AccessControl: accessControl,
+	}
+	return detail, nil
+}
+
+func (t *ServiceInfo) GetPageList(c *gin.Context, tx *gorm.DB, param *dto.ServiceListInput) ([]ServiceInfo, int64, error) {
 	total := int64(0)
 	list := []ServiceInfo{}
 	offset := (param.PageNumber - 1) * param.PageSize
 	query := tx.WithContext(c).Table(t.TableName()).Where("is_valid=1")
 	if param.Info != "" {
-		query = query.Where("(service_name like %?% or service_desc like %?%)", param.Info, param.Info)
+		query = query.Where("(service_name like ? or service_desc like ?)", "%"+param.Info+"%", "%"+param.Info+"%")
 	}
 	if err := query.Limit(param.PageSize).Offset(offset).Find(&list).Error; err != nil && err != gorm.ErrRecordNotFound {
 		return nil, 0, err
