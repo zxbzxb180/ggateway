@@ -8,13 +8,13 @@ import (
 )
 
 type ServiceInfo struct {
-	ID          int64     `json:"id" form:"id"`                     // id
-	ServiceName string    `json:"service_name" form:"service_name"` // 服务名称
-	ServiceDesc string    `json:"service_desc" form:"service_desc"` // 服务描述
-	LoadType    int       `json:"load_type" form:"load_type"`       // 负载类型
-	CreatedAt   time.Time `json:"create_at" form:"create_at"`       // 创建时间
-	UpdatedAt   time.Time `json:"update_at" form:"update_at"`       // 更新时间
-	IsValid     int8      `json:"is_valid" form:"is_valid"`         // 是否有效
+	ID          int64     `json:"id" gorm:"column:id" form:"id"`                               // id
+	ServiceName string    `json:"service_name" gorm:"column:service_name" form:"service_name"` // 服务名称
+	ServiceDesc string    `json:"service_desc" gorm:"column:service_desc" form:"service_desc"` // 服务描述
+	LoadType    int       `json:"load_type" gorm:"column:load_type" form:"load_type"`          // 负载类型
+	CreatedAt   time.Time `json:"create_at" gorm:"column:create_at" form:"create_at"`          // 创建时间
+	UpdatedAt   time.Time `json:"update_at" gorm:"column:update_at" form:"update_at"`          // 更新时间
+	IsValid     int8      `json:"is_valid"  gorm:"column:is_valid" form:"is_valid"`            // 是否有效
 }
 
 func (t *ServiceInfo) TableName() string {
@@ -71,7 +71,7 @@ func (t *ServiceInfo) GetPageList(c *gin.Context, tx *gorm.DB, param *dto.Servic
 	if param.Info != "" {
 		query = query.Where("(service_name like ? or service_desc like ?)", "%"+param.Info+"%", "%"+param.Info+"%")
 	}
-	if err := query.Limit(param.PageSize).Offset(offset).Find(&list).Error; err != nil && err != gorm.ErrRecordNotFound {
+	if err := query.Limit(param.PageSize).Offset(offset).Order("id").Find(&list).Error; err != nil && err != gorm.ErrRecordNotFound {
 		return nil, 0, err
 	}
 	query.Limit(param.PageSize).Offset(offset).Count(&total)

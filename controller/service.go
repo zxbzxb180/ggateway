@@ -15,6 +15,7 @@ type ServiceController struct{}
 func ServiceRegister(group *gin.RouterGroup) {
 	service := &ServiceController{}
 	group.GET("/service_list", service.ServiceList)
+	group.GET("/service_delete", service.ServiceDelete)
 }
 
 // ServiceList godoc
@@ -68,11 +69,11 @@ func (service ServiceController) ServiceList(c *gin.Context) {
 
 		// HTTP 后缀接入
 		if serviceDetail.Info.LoadType == public.LoadTypeHTTP && serviceDetail.HttpRule.RuleType == public.HTTPRulePrefixURL && serviceDetail.HttpRule.NeedHttps == 0 {
-			serviceAddr = clusterIP + clusterPort + serviceDetail.HttpRule.Rule
+			serviceAddr = fmt.Sprintf("%s:%s%s", clusterIP, clusterPort, serviceDetail.HttpRule.Rule)
 		}
 		// HTTPS 后缀接入
 		if serviceDetail.Info.LoadType == public.LoadTypeHTTP && serviceDetail.HttpRule.RuleType == public.HTTPRulePrefixURL && serviceDetail.HttpRule.NeedHttps == 1 {
-			serviceAddr = clusterIP + clusterSSLPort + serviceDetail.HttpRule.Rule
+			serviceAddr = fmt.Sprintf("%s:%s%s", clusterIP, clusterSSLPort, serviceDetail.HttpRule.Rule)
 		}
 		// HTTP 域名接入
 		if serviceDetail.Info.LoadType == public.LoadTypeHTTP && serviceDetail.HttpRule.RuleType == public.HTTPRuleTypeDomain {
@@ -105,4 +106,43 @@ func (service ServiceController) ServiceList(c *gin.Context) {
 		List:  outputList,
 	}
 	middleware.ResponseSuccess(c, out)
+}
+
+// ServiceDelete godoc
+// @Summary 服务删除
+// @Description 服务删除
+// @Tags 服务管理
+// @ID /service/service_delete
+// @Accept json
+// @Produce	json
+// @Param service_id query int true "服务id"
+// @Success 200 {object} middleware.Response{data=string} "success"
+// @Router /service/service_delete [get]
+func (service ServiceController) ServiceDelete(c *gin.Context) {
+	params := &dto.ServiceDeleteInput{}
+	if err := params.BindValidParam(c); err != nil {
+		middleware.ResponseError(c, 2001, err)
+		return
+	}
+
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 2002, err)
+		return
+	}
+
+	// 查找服务
+	serviceInfo := &dao.ServiceInfo{ID: params.ServiceId}
+	serviceInfo, err = serviceInfo.Find(c, tx, serviceInfo)
+	if err != nil {
+		middleware.ResponseError(c, 2003, err)
+		return
+	}
+	serviceInfo.IsValid = 0
+	if err = serviceInfo.Save(c, tx); err != nil {
+		middleware.ResponseError(c, 2004, err)
+		return
+	}
+
+	middleware.ResponseSuccess(c, "")
 }

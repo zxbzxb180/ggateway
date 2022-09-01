@@ -13,7 +13,7 @@ type ServiceGrpcRule struct {
 }
 
 func (t *ServiceGrpcRule) TableName() string {
-	return "gateway_service_access_control"
+	return "gateway_service_grpc_rule"
 }
 
 func (t *ServiceGrpcRule) Find(c *gin.Context, tx *gorm.DB, search *ServiceGrpcRule) (*ServiceGrpcRule, error) {

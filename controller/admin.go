@@ -65,13 +65,13 @@ func (admininfo *AdminController) ChangePwd(c *gin.Context) {
 
 	params := &dto.ChangePwdInput{}
 	if err := params.BindValidParam(c); err != nil {
-		middleware.ResponseError(c, 1001, err)
+		middleware.ResponseError(c, 2001, err)
 		return
 	}
 	// 从数据库读取adminInfo
 	tx, err := lib.GetGormPool("default")
 	if err != nil {
-		middleware.ResponseError(c, 1002, err)
+		middleware.ResponseError(c, 2002, err)
 		return
 	}
 
@@ -80,14 +80,14 @@ func (admininfo *AdminController) ChangePwd(c *gin.Context) {
 	sessionInfo := session.Get(public.AdminSessionInfoKey)
 	adminSessionInfo := &dto.AdminSessionInfo{}
 	if err := json.Unmarshal([]byte(fmt.Sprint(sessionInfo)), adminSessionInfo); err != nil {
-		middleware.ResponseError(c, 1003, err)
+		middleware.ResponseError(c, 2003, err)
 		return
 	}
 	// 2 利用ID查询用户信息
 	adminInfo := &dao.Admin{}
 	adminInfo, err = adminInfo.Find(c, tx, &dao.Admin{UserName: adminSessionInfo.UserName, ID: adminSessionInfo.ID})
 	if err != nil {
-		middleware.ResponseError(c, 1004, err)
+		middleware.ResponseError(c, 2004, err)
 		return
 	}
 	// 3 params.password + salt  sha256 =  saltPassword
@@ -96,7 +96,7 @@ func (admininfo *AdminController) ChangePwd(c *gin.Context) {
 
 	// 4 save
 	if err = adminInfo.Save(c, tx); err != nil {
-		middleware.ResponseError(c, 1005, err)
+		middleware.ResponseError(c, 2005, err)
 		return
 	}
 
