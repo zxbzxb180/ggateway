@@ -36,8 +36,6 @@ github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/denisenkom/go-mssqldb v0.0.0-20190515213511-eb9f6a1743f3/go.mod h1:zAg7JM8CkOJ43xKXIj7eRO9kmWm/TW578qo+oDO6tuM=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
-github.com/e421083458/golang_common v1.2.1 h1:GKHTwlpde2InRCRsc2q3ue4rKmEffHfH2YY9vyliXvw=
-github.com/e421083458/golang_common v1.2.1/go.mod h1:ut0mYTl+JC8/c39fTVx51V1NPNF37khAgE9bcd0MVPk=
 github.com/e421083458/sse v0.1.1 h1:gvCOCgxw3BQ8ps5FohmSaP7OaTZwStK9+5qRQMRxGDA=
 github.com/e421083458/sse v0.1.1/go.mod h1:CSS4w4zFC88opO4oEy1WLMjRe4GzMeEPYB6QkxwAsL8=
 github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=
@@ -242,6 +240,8 @@ github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijb
 github.com/urfave/cli v1.22.2/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
+github.com/zxbzxb180/golang_common v0.0.0-20220905094443-ee6dfb9b4b1c h1:ffIYOit2fXiKMrJGoJZ5lsn1GLuEr92Oq9z7jq5CouI=
+github.com/zxbzxb180/golang_common v0.0.0-20220905094443-ee6dfb9b4b1c/go.mod h1:JYCyjxn1PGa/OKq85Y0pStgk+lzqPai5If2jtahY3vo=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.opencensus.io v0.20.1/go.mod h1:6WKK9ahsWS3RSO+PY9ZHZUfv2irvY6gN279GOPZjmmk=
 go.uber.org/atomic v1.4.0/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=

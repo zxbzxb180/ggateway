@@ -4,11 +4,11 @@ import (
 	"ggateway/controller"
 	"ggateway/docs"
 	"ggateway/middleware"
-	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
+	"github.com/zxbzxb180/golang_common/lib"
 	"log"
 )
 
