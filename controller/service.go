@@ -16,6 +16,7 @@ func ServiceRegister(group *gin.RouterGroup) {
 	service := &ServiceController{}
 	group.GET("/service_list", service.ServiceList)
 	group.GET("/service_delete", service.ServiceDelete)
+	group.GET("/service_detail", service.ServiceDetail)
 }
 
 // ServiceList godoc
@@ -145,4 +146,18 @@ func (service ServiceController) ServiceDelete(c *gin.Context) {
 	}
 
 	middleware.ResponseSuccess(c, "")
+}
+
+// ServiceDetail godoc
+// @Summary 服务详情
+// @Description 服务详情
+// @Tags 服务管理
+// @ID /service/service_detail
+// @Accept  json
+// @Produce  json
+// @Param id query string true "服务ID"
+// @Success 200 {object} middleware.Response{data=dao.ServiceDetail} "success"
+// @Router /service/service_detail [get]
+func (service ServiceController) ServiceDetail(c *gin.Context) {
+
 }
