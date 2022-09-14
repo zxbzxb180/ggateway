@@ -31,7 +31,7 @@ func ServiceRegister(group *gin.RouterGroup) {
 // @Param page_size query int true "每页数量"
 // @Success 200 {object} middleware.Response{data=dto.ServiceListOutput} "success"
 // @Router /service/service_list [get]
-func (service ServiceController) ServiceList(c *gin.Context) {
+func (service *ServiceController) ServiceList(c *gin.Context) {
 	params := &dto.ServiceListInput{}
 	if err := params.BindValidParam(c); err != nil {
 		middleware.ResponseError(c, 1001, err)
@@ -119,7 +119,7 @@ func (service ServiceController) ServiceList(c *gin.Context) {
 // @Param service_id query int true "服务id"
 // @Success 200 {object} middleware.Response{data=string} "success"
 // @Router /service/service_delete [get]
-func (service ServiceController) ServiceDelete(c *gin.Context) {
+func (service *ServiceController) ServiceDelete(c *gin.Context) {
 	params := &dto.ServiceDeleteInput{}
 	if err := params.BindValidParam(c); err != nil {
 		middleware.ResponseError(c, 2001, err)
@@ -158,6 +158,6 @@ func (service ServiceController) ServiceDelete(c *gin.Context) {
 // @Param id query string true "服务ID"
 // @Success 200 {object} middleware.Response{data=dao.ServiceDetail} "success"
 // @Router /service/service_detail [get]
-func (service ServiceController) ServiceDetail(c *gin.Context) {
+func (service *ServiceController) ServiceDetail(c *gin.Context) {
 
 }
