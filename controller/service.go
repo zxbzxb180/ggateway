@@ -159,5 +159,30 @@ func (service *ServiceController) ServiceDelete(c *gin.Context) {
 // @Success 200 {object} middleware.Response{data=dao.ServiceDetail} "success"
 // @Router /service/service_detail [get]
 func (service *ServiceController) ServiceDetail(c *gin.Context) {
+	params := &dto.ServiceDetailInput{}
+	if err := params.BindValidParam(c); err != nil {
+		middleware.ResponseError(c, 3001, err)
+		return
+	}
 
+	// 连接orm
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 3002, err)
+		return
+	}
+	// 读取基本信息
+	serviceInfo := &dao.ServiceInfo{ID: params.ServiceId}
+	serviceInfo, err = serviceInfo.Find(c, tx, serviceInfo)
+	if err != nil {
+		middleware.ResponseError(c, 3003, err)
+		return
+	}
+	// 读取详情
+	serviceDetail, err := serviceInfo.GetServiceDetail(c, tx, serviceInfo)
+	if err != nil {
+		middleware.ResponseError(c, 3004, err)
+		return
+	}
+	middleware.ResponseSuccess(c, serviceDetail)
 }
