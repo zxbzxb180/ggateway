@@ -23,8 +23,8 @@ type ServiceListOutputItem struct {
 }
 
 type ServiceListOutput struct {
-	Total int64                   `json:"total" form:"total" comment:"总数" example:"" validate:""`         // 总数
-	List  []ServiceListOutputItem `json:"list" form:"list" comment:"服务列表" example:"" validate:"required"` // 服务列表
+	Total int64                   `json:"total" form:"total" comment:"总数" example:"56" validate:""` // 总数
+	List  []ServiceListOutputItem `json:"list" form:"list" comment:"服务列表"  validate:""`             // 服务列表
 }
 
 func (param *ServiceListInput) BindValidParam(c *gin.Context) error {
