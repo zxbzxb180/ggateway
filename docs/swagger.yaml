@@ -214,6 +214,19 @@ definitions:
         description: 节点总数
         type: integer
     type: object
+  dto.ServiceStatisticsOutput:
+    properties:
+      today:
+        description: 列表
+        items:
+          type: integer
+        type: array
+      yesterday:
+        description: 列表
+        items:
+          type: integer
+        type: array
+    type: object
   middleware.Response:
     properties:
       data: {}
@@ -424,6 +437,33 @@ paths:
                   $ref: '#/definitions/dto.ServiceListOutput'
               type: object
       summary: 服务列表
+      tags:
+      - 服务管理
+  /service/service_statistics:
+    get:
+      consumes:
+      - application/json
+      description: 服务统计
+      operationId: /service/service_statistics
+      parameters:
+      - description: 服务ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ServiceStatisticsOutput'
+              type: object
+      summary: 服务统计
       tags:
       - 服务管理
 securityDefinitions:

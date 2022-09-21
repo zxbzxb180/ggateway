@@ -8,6 +8,7 @@ import (
 	"ggateway/public"
 	"github.com/gin-gonic/gin"
 	"github.com/zxbzxb180/golang_common/lib"
+	"time"
 )
 
 type ServiceController struct{}
@@ -17,6 +18,7 @@ func ServiceRegister(group *gin.RouterGroup) {
 	group.GET("/service_list", service.ServiceList)
 	group.GET("/service_delete", service.ServiceDelete)
 	group.GET("/service_detail", service.ServiceDetail)
+	group.GET("/service_statistics", service.ServiceStatistics)
 }
 
 // ServiceList godoc
@@ -185,4 +187,62 @@ func (service *ServiceController) ServiceDetail(c *gin.Context) {
 		return
 	}
 	middleware.ResponseSuccess(c, serviceDetail)
+}
+
+// ServiceStatistics godoc
+// @Summary 服务统计
+// @Description 服务统计
+// @Tags 服务管理
+// @ID /service/service_statistics
+// @Accept  json
+// @Produce  json
+// @Param id query string true "服务ID"
+// @Success 200 {object} middleware.Response{data=dto.ServiceStatisticsOutput} "success"
+// @Router /service/service_statistics [get]
+func (service *ServiceController) ServiceStatistics(c *gin.Context) {
+	params := &dto.ServiceStatisticsInput{}
+	if err := params.BindValidParam(c); err != nil {
+		middleware.ResponseError(c, 4001, err)
+		return
+	}
+
+	// 连接orm
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 3002, err)
+		return
+	}
+
+	// 通过查询服务详情
+	serviceInfo := &dao.ServiceInfo{ID: params.ServiceId}
+	serviceDetail, err := serviceInfo.GetServiceDetail(c, tx, serviceInfo)
+	if err != nil {
+		middleware.ResponseError(c, 2003, err)
+		return
+	}
+	counter, err := public.FlowCounterHandler.GetCounter(public.FlowServicePrefix + serviceDetail.Info.ServiceName)
+	if err != nil {
+		middleware.ResponseError(c, 2004, err)
+		return
+	}
+	todayList := []int64{}
+	currentTime := time.Now()
+	for i := 0; i <= currentTime.Hour(); i++ {
+		dateTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), i, 0, 0, 0, lib.TimeLocation)
+		hourData, _ := counter.GetHourData(dateTime)
+		todayList = append(todayList, hourData)
+	}
+
+	yesterdayList := []int64{}
+	yesterTime := currentTime.Add(-1 * time.Duration(time.Hour*24))
+	for i := 0; i <= 23; i++ {
+		dateTime := time.Date(yesterTime.Year(), yesterTime.Month(), yesterTime.Day(), i, 0, 0, 0, lib.TimeLocation)
+		hourData, _ := counter.GetHourData(dateTime)
+		yesterdayList = append(yesterdayList, hourData)
+	}
+	middleware.ResponseSuccess(c, &dto.ServiceStatisticsOutput{
+		Today:     todayList,
+		Yesterday: yesterdayList,
+	})
+
 }

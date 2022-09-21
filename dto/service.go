@@ -46,3 +46,16 @@ type ServiceDetailInput struct {
 func (param *ServiceDetailInput) BindValidParam(c *gin.Context) error {
 	return public.DefaultGetValidParams(c, param)
 }
+
+type ServiceStatisticsInput struct {
+	ServiceId int64 `json:"service_id" form:"service_id" comment:"服务id" example:"56" validate:"required"` // 服务id
+}
+
+type ServiceStatisticsOutput struct {
+	Today     []int64 `json:"today" form:"today" comment:"今日流量"  validate:""`         //列表
+	Yesterday []int64 `json:"yesterday" form:"yesterday" comment:"昨日流量"  validate:""` //列表
+}
+
+func (param *ServiceStatisticsInput) BindValidParam(c *gin.Context) error {
+	return public.DefaultGetValidParams(c, param)
+}
