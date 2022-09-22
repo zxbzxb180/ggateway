@@ -12,6 +12,7 @@ const (
 
 	RedisFlowDayKey  = "flow_day_count"
 	RedisFlowHourKey = "flow_hour_count"
+	RedisExpireTime  = 86400 * 2
 
 	FlowTotal         = "flow_total"
 	FlowServicePrefix = "flow_service_"

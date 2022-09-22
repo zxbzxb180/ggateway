@@ -448,7 +448,7 @@ paths:
       parameters:
       - description: 服务ID
         in: query
-        name: id
+        name: service_id
         required: true
         type: string
       produces:

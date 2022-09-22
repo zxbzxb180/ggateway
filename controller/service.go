@@ -196,7 +196,7 @@ func (service *ServiceController) ServiceDetail(c *gin.Context) {
 // @ID /service/service_statistics
 // @Accept  json
 // @Produce  json
-// @Param id query string true "服务ID"
+// @Param service_id query string true "服务ID"
 // @Success 200 {object} middleware.Response{data=dto.ServiceStatisticsOutput} "success"
 // @Router /service/service_statistics [get]
 func (service *ServiceController) ServiceStatistics(c *gin.Context) {
@@ -209,20 +209,21 @@ func (service *ServiceController) ServiceStatistics(c *gin.Context) {
 	// 连接orm
 	tx, err := lib.GetGormPool("default")
 	if err != nil {
-		middleware.ResponseError(c, 3002, err)
+		middleware.ResponseError(c, 4002, err)
 		return
 	}
 
 	// 通过查询服务详情
 	serviceInfo := &dao.ServiceInfo{ID: params.ServiceId}
-	serviceDetail, err := serviceInfo.GetServiceDetail(c, tx, serviceInfo)
+	serviceInfo, err = serviceInfo.Find(c, tx, serviceInfo)
+	//serviceDetail, err := serviceInfo.GetServiceDetail(c, tx, serviceInfo)
 	if err != nil {
-		middleware.ResponseError(c, 2003, err)
+		middleware.ResponseError(c, 4003, err)
 		return
 	}
-	counter, err := public.FlowCounterHandler.GetCounter(public.FlowServicePrefix + serviceDetail.Info.ServiceName)
+	counter, err := public.FlowCounterHandler.GetCounter(public.FlowServicePrefix + serviceInfo.ServiceName)
 	if err != nil {
-		middleware.ResponseError(c, 2004, err)
+		middleware.ResponseError(c, 4004, err)
 		return
 	}
 	todayList := []int64{}

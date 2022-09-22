@@ -41,9 +41,9 @@ func NewRedisFlowCountService(appID string, interval time.Duration) *RedisFlowCo
 			hourKey := reqCounter.GetHourKey(currentTime)
 			if err := RedisConfPipline(func(c redis.Conn) {
 				c.Send("INCRBY", dayKey, tickerCount)
-				c.Send("EXPIRE", dayKey, 86400*2)
+				c.Send("EXPIRE", dayKey, RedisExpireTime)
 				c.Send("INCRBY", hourKey, tickerCount)
-				c.Send("EXPIRE", hourKey, 86400*2)
+				c.Send("EXPIRE", hourKey, RedisExpireTime)
 			}); err != nil {
 				fmt.Println("RedisConfPipline err", err)
 				continue

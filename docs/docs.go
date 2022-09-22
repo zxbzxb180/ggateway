@@ -357,7 +357,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "服务ID",
-                        "name": "id",
+                        "name": "service_id",
                         "in": "query",
                         "required": true
                     }
