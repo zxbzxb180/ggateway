@@ -7,7 +7,10 @@ import (
 	"ggateway/middleware"
 	"ggateway/public"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"github.com/zxbzxb180/golang_common/lib"
+	"gorm.io/gorm"
+	"strings"
 	"time"
 )
 
@@ -19,6 +22,9 @@ func ServiceRegister(group *gin.RouterGroup) {
 	group.GET("/service_delete", service.ServiceDelete)
 	group.GET("/service_detail", service.ServiceDetail)
 	group.GET("/service_statistics", service.ServiceStatistics)
+	group.POST("/service_add_http", service.ServiceAddHttp)
+	group.POST("/service_update_http", service.ServiceUpdateHTTP)
+
 }
 
 // ServiceList godoc
@@ -246,4 +252,214 @@ func (service *ServiceController) ServiceStatistics(c *gin.Context) {
 		Yesterday: yesterdayList,
 	})
 
+}
+
+// ServiceAddHttp godoc
+// @Summary 添加HTTP服务
+// @Description 添加HTTP服务
+// @Tags 服务管理
+// @ID /service/service_add_http
+// @Accept  json
+// @Produce  json
+// @Param data body dto.ServiceAddHttpInput true "http detail"
+// @Success 200 {object} middleware.Response{data=string} "success"
+// @Router /service/service_add_http [post]
+func (service *ServiceController) ServiceAddHttp(c *gin.Context) {
+	params := &dto.ServiceAddHttpInput{}
+	if err := params.BindValidParam(c); err != nil {
+		middleware.ResponseError(c, 5001, err)
+		return
+	}
+	// 判断IP列表长度与权重列表长度是否一致
+	if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
+		middleware.ResponseError(c, 5002, errors.New("IP列表与权重列表数量不一致"))
+		return
+	}
+
+	// 连接orm
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 5003, err)
+		return
+	}
+	// 开始事务
+	tx = tx.Begin()
+
+	// 判断服务是否已存在
+	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName}
+	if _, err = serviceInfo.Find(c, tx, serviceInfo); err == nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 5004, errors.New("服务已存在"))
+		return
+	}
+
+	// 判断服务前缀或域名是否存在
+	httpUrl := &dao.ServiceHttpRule{RuleType: params.RuleType, Rule: params.Rule}
+	if _, err := httpUrl.Find(c, tx, httpUrl); err == nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 5005, errors.New("服务接入前缀或域名已存在"))
+		return
+	}
+
+	// 新增一条ServiceInfo数据
+	serviceModel := &dao.ServiceInfo{
+		ServiceName: params.ServiceName,
+		ServiceDesc: params.ServiceDesc,
+		LoadType:    public.LoadTypeHTTP,
+	}
+	if err := serviceModel.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 5006, err)
+		return
+	}
+	// 根据前面新增的ServiceInfo获取ID，新增一条httpRule数据
+	httpRule := &dao.ServiceHttpRule{
+		ServiceID:      serviceModel.ID,
+		RuleType:       params.RuleType,
+		Rule:           params.Rule,
+		NeedHttps:      params.NeedHttps,
+		NeedStripUri:   params.NeedStripUri,
+		NeedWebsocket:  params.NeedWebsocket,
+		UrlRewrite:     params.UrlRewrite,
+		HeaderTransfor: params.HeaderTransfor,
+	}
+	if err := httpRule.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 5007, err)
+		return
+	}
+
+	// 根据前面新增的ServiceInfo获取ID，新增一条ServiceAccessControl数据
+	accessControl := &dao.ServiceAccessControl{
+		ServiceID:         serviceModel.ID,
+		OpenAuth:          params.OpenAuth,
+		BlackList:         params.BlackList,
+		WhiteList:         params.WhiteList,
+		ClientIPFlowLimit: params.ClientipFlowLimit,
+		ServiceFlowLimit:  params.ServiceFlowLimit,
+	}
+	if err := accessControl.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 5008, err)
+		return
+	}
+
+	// 根据前面新增的ServiceInfo获取ID，新增一条ServiceLoadBalance数据
+	loadBalance := &dao.ServiceLoadBalance{
+		ServiceID:              serviceModel.ID,
+		RoundType:              params.RoundType,
+		IpList:                 params.IpList,
+		WeightList:             params.WeightList,
+		UpstreamConnectTimeout: params.UpstreamConnectTimeout,
+		UpstreamHeaderTimeout:  params.UpstreamHeaderTimeout,
+		UpstreamIdleTimeout:    params.UpstreamIdleTimeout,
+		UpstreamMaxIdle:        params.UpstreamMaxIdle,
+	}
+	if err := loadBalance.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 5009, err)
+		return
+	}
+	tx.Commit()
+	middleware.ResponseSuccess(c, "success")
+}
+
+// ServiceUpdateHTTP godoc
+// @Summary 修改HTTP服务
+// @Description 修改HTTP服务
+// @Tags 服务管理
+// @ID /service/service_update_http
+// @Accept  json
+// @Produce  json
+// @Param data body dto.ServiceAddHttpInput true "body"
+// @Success 200 {object} middleware.Response{data=string} "success"
+// @Router /service/service_update_http [post]
+func (service *ServiceController) ServiceUpdateHTTP(c *gin.Context) {
+	params := &dto.ServiceAddHttpInput{}
+	if err := params.BindValidParam(c); err != nil {
+		middleware.ResponseError(c, 6001, err)
+		return
+	}
+
+	// 判断IP列表长度与权重列表长度是否一致
+	if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
+		middleware.ResponseError(c, 6002, errors.New("IP列表与权重列表数量不一致"))
+		return
+	}
+
+	// 连接orm
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 6003, err)
+		return
+	}
+	// 开始事务
+	tx = tx.Begin()
+
+	// 判断服务基本信息数据是否已存在
+	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName}
+	if serviceInfo, err = serviceInfo.Find(c, tx, serviceInfo); err != nil && err == gorm.ErrRecordNotFound {
+		tx.Rollback()
+		middleware.ResponseError(c, 6004, errors.New("服务不存在"))
+		return
+	}
+
+	// 判断服务详细信息数据是否已存在
+	serviceDetail, err := serviceInfo.GetServiceDetail(c, tx, serviceInfo)
+	if err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 6005, errors.New("服务不存在"))
+		return
+	}
+
+	// 修改服务详情
+	info := serviceDetail.Info
+	info.ServiceDesc = params.ServiceDesc
+	if err := info.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 6006, err)
+		return
+	}
+
+	// 修改http规则
+	httpRule := serviceDetail.HttpRule
+	httpRule.NeedHttps = params.NeedHttps
+	httpRule.NeedStripUri = params.NeedStripUri
+	httpRule.NeedWebsocket = params.NeedWebsocket
+	httpRule.UrlRewrite = params.UrlRewrite
+	httpRule.HeaderTransfor = params.HeaderTransfor
+	if err := httpRule.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 6007, err)
+		return
+	}
+
+	// 修改访问控制
+	accessControl := serviceDetail.AccessControl
+	accessControl.OpenAuth = params.OpenAuth
+	accessControl.BlackList = params.BlackList
+	accessControl.WhiteList = params.WhiteList
+	accessControl.ClientIPFlowLimit = params.ClientipFlowLimit
+	accessControl.ServiceFlowLimit = params.ServiceFlowLimit
+	if err := accessControl.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 6008, err)
+		return
+	}
+
+	loadbalance := serviceDetail.LoadBalance
+	loadbalance.RoundType = params.RoundType
+	loadbalance.IpList = params.IpList
+	loadbalance.WeightList = params.WeightList
+	loadbalance.UpstreamConnectTimeout = params.UpstreamConnectTimeout
+	loadbalance.UpstreamHeaderTimeout = params.UpstreamHeaderTimeout
+	loadbalance.UpstreamIdleTimeout = params.UpstreamIdleTimeout
+	loadbalance.UpstreamMaxIdle = params.UpstreamMaxIdle
+	if err := loadbalance.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 6009, err)
+		return
+	}
+	tx.Commit()
+	middleware.ResponseSuccess(c, "success")
 }
