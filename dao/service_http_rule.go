@@ -30,6 +30,15 @@ func (t *ServiceHttpRule) Find(c *gin.Context, tx *gorm.DB, search *ServiceHttpR
 	return out, nil
 }
 
+func (t *ServiceHttpRule) Exist(c *gin.Context, tx *gorm.DB, search *ServiceHttpRule) (*ServiceHttpRule, error) {
+	out := &ServiceHttpRule{}
+	err := tx.WithContext(c).Where(search).First(out).Error
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (t *ServiceHttpRule) Save(c *gin.Context, tx *gorm.DB) error {
 
 	return tx.WithContext(c).Save(t).Error

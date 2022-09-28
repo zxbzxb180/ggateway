@@ -87,6 +87,15 @@ func (t *ServiceInfo) Find(c *gin.Context, tx *gorm.DB, search *ServiceInfo) (*S
 	return out, nil
 }
 
+func (t *ServiceInfo) Exist(c *gin.Context, tx *gorm.DB, search *ServiceInfo) (*ServiceInfo, error) {
+	out := &ServiceInfo{}
+	err := tx.WithContext(c).Where(search).First(out).Error
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (t *ServiceInfo) Save(c *gin.Context, tx *gorm.DB) error {
 
 	return tx.WithContext(c).Save(t).Error

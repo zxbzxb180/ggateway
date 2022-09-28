@@ -287,7 +287,7 @@ func (service *ServiceController) ServiceAddHttp(c *gin.Context) {
 
 	// 判断服务是否已存在
 	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName}
-	if _, err = serviceInfo.Find(c, tx, serviceInfo); err == nil {
+	if _, err = serviceInfo.Exist(c, tx, serviceInfo); err == nil {
 		tx.Rollback()
 		middleware.ResponseError(c, 5004, errors.New("服务已存在"))
 		return
@@ -295,7 +295,7 @@ func (service *ServiceController) ServiceAddHttp(c *gin.Context) {
 
 	// 判断服务前缀或域名是否存在
 	httpUrl := &dao.ServiceHttpRule{RuleType: params.RuleType, Rule: params.Rule}
-	if _, err := httpUrl.Find(c, tx, httpUrl); err == nil {
+	if _, err := httpUrl.Exist(c, tx, httpUrl); err == nil {
 		tx.Rollback()
 		middleware.ResponseError(c, 5005, errors.New("服务接入前缀或域名已存在"))
 		return
@@ -398,7 +398,7 @@ func (service *ServiceController) ServiceUpdateHTTP(c *gin.Context) {
 
 	// 判断服务基本信息数据是否已存在
 	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName}
-	if serviceInfo, err = serviceInfo.Find(c, tx, serviceInfo); err != nil && err == gorm.ErrRecordNotFound {
+	if serviceInfo, err = serviceInfo.Exist(c, tx, serviceInfo); err != nil && err == gorm.ErrRecordNotFound {
 		tx.Rollback()
 		middleware.ResponseError(c, 6004, errors.New("服务不存在"))
 		return
@@ -423,6 +423,7 @@ func (service *ServiceController) ServiceUpdateHTTP(c *gin.Context) {
 
 	// 修改http规则
 	httpRule := serviceDetail.HttpRule
+	httpRule.Rule = params.Rule
 	httpRule.NeedHttps = params.NeedHttps
 	httpRule.NeedStripUri = params.NeedStripUri
 	httpRule.NeedWebsocket = params.NeedWebsocket
