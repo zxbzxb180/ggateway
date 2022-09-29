@@ -24,6 +24,15 @@ func (t *ServiceTcpRule) Find(c *gin.Context, tx *gorm.DB, search *ServiceTcpRul
 	return out, nil
 }
 
+func (t *ServiceTcpRule) Exist(c *gin.Context, tx *gorm.DB, search *ServiceTcpRule) (*ServiceTcpRule, error) {
+	out := &ServiceTcpRule{}
+	err := tx.WithContext(c).Where(search).First(out).Error
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (t *ServiceTcpRule) Save(c *gin.Context, tx *gorm.DB) error {
 
 	return tx.WithContext(c).Save(t).Error
