@@ -25,6 +25,15 @@ func (t *ServiceGrpcRule) Find(c *gin.Context, tx *gorm.DB, search *ServiceGrpcR
 	return out, nil
 }
 
+func (t *ServiceGrpcRule) Exist(c *gin.Context, tx *gorm.DB, search *ServiceGrpcRule) (*ServiceGrpcRule, error) {
+	out := &ServiceGrpcRule{}
+	err := tx.WithContext(c).Where(search).First(out).Error
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (t *ServiceGrpcRule) Save(c *gin.Context, tx *gorm.DB) error {
 
 	return tx.WithContext(c).Save(t).Error

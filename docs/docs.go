@@ -191,6 +191,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/service_add_grpc": {
+            "post": {
+                "description": "添加GRPC服务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "添加GRPC服务",
+                "operationId": "/service/service_add_grpc",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ServiceAddGrpcInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/service/service_add_http": {
             "post": {
                 "description": "添加HTTP服务",
@@ -240,7 +287,7 @@ const docTemplate = `{
         },
         "/service/service_add_tcp": {
             "post": {
-                "description": "tcp服务添加",
+                "description": "添加TCP服务",
                 "consumes": [
                     "application/json"
                 ],
@@ -250,7 +297,7 @@ const docTemplate = `{
                 "tags": [
                     "服务管理"
                 ],
-                "summary": "tcp服务添加",
+                "summary": "添加TCP服务",
                 "operationId": "/service/service_add_tcp",
                 "parameters": [
                     {
@@ -478,9 +525,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/service/service_update_http": {
+        "/service/service_update_grpc": {
             "post": {
-                "description": "修改HTTP服务",
+                "description": "更新GRPC服务",
                 "consumes": [
                     "application/json"
                 ],
@@ -490,7 +537,54 @@ const docTemplate = `{
                 "tags": [
                     "服务管理"
                 ],
-                "summary": "修改HTTP服务",
+                "summary": "更新GRPC服务",
+                "operationId": "/service/service_update_grpc",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ServiceUpdateGrpcInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/service/service_update_http": {
+            "post": {
+                "description": "HTTP服务更新",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "HTTP服务更新",
                 "operationId": "/service/service_update_http",
                 "parameters": [
                     {
@@ -527,7 +621,7 @@ const docTemplate = `{
         },
         "/service/service_update_tcp": {
             "post": {
-                "description": "tcp服务更新",
+                "description": "更新TCP服务",
                 "consumes": [
                     "application/json"
                 ],
@@ -537,7 +631,7 @@ const docTemplate = `{
                 "tags": [
                     "服务管理"
                 ],
-                "summary": "tcp服务更新",
+                "summary": "更新TCP服务",
                 "operationId": "/service/service_update_tcp",
                 "parameters": [
                     {
@@ -834,6 +928,62 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ServiceAddGrpcInput": {
+            "type": "object",
+            "required": [
+                "ip_list",
+                "port",
+                "service_desc",
+                "service_name",
+                "weight_list"
+            ],
+            "properties": {
+                "black_list": {
+                    "type": "string"
+                },
+                "clientip_flow_limit": {
+                    "type": "integer"
+                },
+                "forbid_list": {
+                    "type": "string"
+                },
+                "header_transfor": {
+                    "type": "string"
+                },
+                "ip_list": {
+                    "type": "string"
+                },
+                "open_auth": {
+                    "type": "integer"
+                },
+                "port": {
+                    "type": "integer",
+                    "maximum": 8999,
+                    "minimum": 8001
+                },
+                "round_type": {
+                    "type": "integer"
+                },
+                "service_desc": {
+                    "type": "string"
+                },
+                "service_flow_limit": {
+                    "type": "integer"
+                },
+                "service_name": {
+                    "type": "string"
+                },
+                "weight_list": {
+                    "type": "string"
+                },
+                "white_host_name": {
+                    "type": "string"
+                },
+                "white_list": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ServiceAddHttpInput": {
             "type": "object",
             "required": [
@@ -1085,6 +1235,66 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                }
+            }
+        },
+        "dto.ServiceUpdateGrpcInput": {
+            "type": "object",
+            "required": [
+                "id",
+                "ip_list",
+                "port",
+                "service_desc",
+                "service_name",
+                "weight_list"
+            ],
+            "properties": {
+                "black_list": {
+                    "type": "string"
+                },
+                "clientip_flow_limit": {
+                    "type": "integer"
+                },
+                "forbid_list": {
+                    "type": "string"
+                },
+                "header_transfor": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ip_list": {
+                    "type": "string"
+                },
+                "open_auth": {
+                    "type": "integer"
+                },
+                "port": {
+                    "type": "integer",
+                    "maximum": 8999,
+                    "minimum": 8001
+                },
+                "round_type": {
+                    "type": "integer"
+                },
+                "service_desc": {
+                    "type": "string"
+                },
+                "service_flow_limit": {
+                    "type": "integer"
+                },
+                "service_name": {
+                    "type": "string"
+                },
+                "weight_list": {
+                    "type": "string"
+                },
+                "white_host_name": {
+                    "type": "string"
+                },
+                "white_list": {
+                    "type": "string"
                 }
             }
         },
